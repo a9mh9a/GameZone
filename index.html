@@ -60,6 +60,13 @@
             touch-action: manipulation;
         }
 
+        /* تحسينات للألوان على الموبايل */
+        .mobile-color-fix {
+            -webkit-backface-visibility: hidden;
+            -webkit-transform: translateZ(0) scale(1.0, 1.0);
+            transform: translateZ(0);
+        }
+
         .background-animation {
             position: fixed;
             top: 0;
@@ -1198,25 +1205,6 @@
             50% { transform: scale(1.1); box-shadow: 0 0 30px rgba(56, 176, 0, 1); }
         }
 
-        .dooz-connections {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-        }
-
-        .connection-line {
-            position: absolute;
-            background: var(--success);
-            height: 8px;
-            border-radius: 4px;
-            transform-origin: 0 0;
-            z-index: 1;
-            box-shadow: 0 0 10px var(--success);
-        }
-
         /* لعبة الحية والدرج */
         .snake-board {
             max-width: 600px;
@@ -1516,18 +1504,35 @@
                 min-height: -webkit-fill-available;
             }
         }
+
+        /* تحسينات للألوان على الموبايل */
+        .mobile-color-fix {
+            -webkit-backface-visibility: hidden;
+            -webkit-transform: translateZ(0) scale(1.0, 1.0);
+            transform: translateZ(0);
+        }
+
+        /* تحسينات للألعاب على الموبايل */
+        .game-container, .card, .player-info, .opponent-display {
+            will-change: transform;
+        }
+
+        /* تحسينات للألوان المتدرجة على الموبايل */
+        .gradient-fix {
+            background-attachment: scroll !important;
+        }
     </style>
 </head>
 <body>
-    <div class="background-animation"></div>
+    <div class="background-animation gradient-fix"></div>
     
-    <header>
+    <header class="mobile-color-fix">
         <div class="logo">🎮</div>
         <h1>GameZone</h1>
         <p class="subtitle">تطبيق الألعاب الجماعية - تحدّي الأصدقاء أو الذكاء الاصطناعي!</p>
     </header>
 
-    <div class="container">
+    <div class="container mobile-color-fix">
         <!-- قسم تسجيل اللاعب -->
         <div id="playerRegistration" class="card welcome-card">
             <h2><i class="fas fa-user-plus"></i> مرحباً في GameZone!</h2>
@@ -1627,6 +1632,7 @@
                         <option value="easy">🟢 سهل - للمبتدئين</option>
                         <option value="medium">🟡 متوسط - تحدي جيد</option>
                         <option value="hard">🔴 صعب - للمحترفين</option>
+                        <option value="impossible">💀 فائق - تحدي مستحيل!</option>
                     </select>
                 </div>
                 <button id="playWithAI" class="ai-button">
@@ -2207,7 +2213,8 @@
                 const levels = {
                     easy: 'سهل',
                     medium: 'متوسط', 
-                    hard: 'صعب'
+                    hard: 'صعب',
+                    impossible: 'فائق'
                 };
                 return levels[this.aiLevel];
             }
@@ -2400,6 +2407,51 @@
             }
 
             aiTictactoeMove() {
+                // الذكاء الاصطناعي بمستوى الفائق الصعوبة
+                if (this.aiLevel === 'impossible') {
+                    // خوارزمية minimax لمستوى الفائق
+                    const bestMove = this.findBestMove();
+                    if (bestMove !== -1) {
+                        this.handleTictactoeClick(bestMove);
+                        return;
+                    }
+                }
+                
+                // الذكاء الاصطناعي بمستوى صعب
+                if (this.aiLevel === 'hard') {
+                    // محاولة الفوز أو منع الفوز
+                    const winMove = this.findWinningMove('⭕️');
+                    if (winMove !== -1) {
+                        this.handleTictactoeClick(winMove);
+                        return;
+                    }
+                    
+                    const blockMove = this.findWinningMove('❌');
+                    if (blockMove !== -1) {
+                        this.handleTictactoeClick(blockMove);
+                        return;
+                    }
+                }
+                
+                // الذكاء الاصطناعي بمستوى متوسط
+                if (this.aiLevel === 'medium') {
+                    // 70% احتمال لاختيار حركة جيدة
+                    if (Math.random() < 0.7) {
+                        const winMove = this.findWinningMove('⭕️');
+                        if (winMove !== -1) {
+                            this.handleTictactoeClick(winMove);
+                            return;
+                        }
+                        
+                        const blockMove = this.findWinningMove('❌');
+                        if (blockMove !== -1) {
+                            this.handleTictactoeClick(blockMove);
+                            return;
+                        }
+                    }
+                }
+                
+                // اختيار عشوائي للحركة المتبقية
                 const availableMoves = this.tictactoeState.board
                     .map((cell, index) => cell === '' ? index : null)
                     .filter(index => index !== null);
@@ -2408,6 +2460,50 @@
                     const randomIndex = availableMoves[Math.floor(Math.random() * availableMoves.length)];
                     this.handleTictactoeClick(randomIndex);
                 }
+            }
+
+            findWinningMove(player) {
+                const winPatterns = [
+                    [0, 1, 2], [3, 4, 5], [6, 7, 8], // صفوف
+                    [0, 3, 6], [1, 4, 7], [2, 5, 8], // أعمدة
+                    [0, 4, 8], [2, 4, 6]             // أقطار
+                ];
+
+                for (const pattern of winPatterns) {
+                    const [a, b, c] = pattern;
+                    const cells = [this.tictactoeState.board[a], this.tictactoeState.board[b], this.tictactoeState.board[c]];
+                    
+                    // إذا كان هناك خليتان للاعب وخلية فارغة
+                    if (cells.filter(cell => cell === player).length === 2) {
+                        const emptyIndex = pattern.find(index => this.tictactoeState.board[index] === '');
+                        if (emptyIndex !== undefined) {
+                            return emptyIndex;
+                        }
+                    }
+                }
+                return -1;
+            }
+
+            findBestMove() {
+                // خوارزمية مبسطة لمستوى الفائق
+                // أولوية المركز
+                if (this.tictactoeState.board[4] === '') return 4;
+                
+                // ثم الزوايا
+                const corners = [0, 2, 6, 8];
+                const availableCorners = corners.filter(index => this.tictactoeState.board[index] === '');
+                if (availableCorners.length > 0) {
+                    return availableCorners[Math.floor(Math.random() * availableCorners.length)];
+                }
+                
+                // ثم الحواف
+                const edges = [1, 3, 5, 7];
+                const availableEdges = edges.filter(index => this.tictactoeState.board[index] === '');
+                if (availableEdges.length > 0) {
+                    return availableEdges[Math.floor(Math.random() * availableEdges.length)];
+                }
+                
+                return -1;
             }
 
             checkTictactoeWin() {
@@ -2468,10 +2564,50 @@
             }
 
             playRPS(playerChoice) {
-                const choices = ['rock', 'paper', 'scissors'];
-                const opponentChoice = this.gameMode === 'ai' ? 
-                    choices[Math.floor(Math.random() * 3)] : 
-                    choices[Math.floor(Math.random() * 3)];
+                let opponentChoice;
+                
+                // الذكاء الاصطناعي بمستوى الفائق
+                if (this.aiLevel === 'impossible') {
+                    // 90% احتمال لاختيار الحركة المناسبة للفوز
+                    if (Math.random() < 0.9) {
+                        if (playerChoice === 'rock') opponentChoice = 'paper';
+                        else if (playerChoice === 'paper') opponentChoice = 'scissors';
+                        else opponentChoice = 'rock';
+                    } else {
+                        // 10% احتمال لاختيار عشوائي
+                        const choices = ['rock', 'paper', 'scissors'];
+                        opponentChoice = choices[Math.floor(Math.random() * 3)];
+                    }
+                } 
+                // الذكاء الاصطناعي بمستوى صعب
+                else if (this.aiLevel === 'hard') {
+                    // 70% احتمال لاختيار الحركة المناسبة للفوز
+                    if (Math.random() < 0.7) {
+                        if (playerChoice === 'rock') opponentChoice = 'paper';
+                        else if (playerChoice === 'paper') opponentChoice = 'scissors';
+                        else opponentChoice = 'rock';
+                    } else {
+                        const choices = ['rock', 'paper', 'scissors'];
+                        opponentChoice = choices[Math.floor(Math.random() * 3)];
+                    }
+                }
+                // الذكاء الاصطناعي بمستوى متوسط
+                else if (this.aiLevel === 'medium') {
+                    // 50% احتمال لاختيار الحركة المناسبة للفوز
+                    if (Math.random() < 0.5) {
+                        if (playerChoice === 'rock') opponentChoice = 'paper';
+                        else if (playerChoice === 'paper') opponentChoice = 'scissors';
+                        else opponentChoice = 'rock';
+                    } else {
+                        const choices = ['rock', 'paper', 'scissors'];
+                        opponentChoice = choices[Math.floor(Math.random() * 3)];
+                    }
+                }
+                // الذكاء الاصطناعي بمستوى سهل
+                else {
+                    const choices = ['rock', 'paper', 'scissors'];
+                    opponentChoice = choices[Math.floor(Math.random() * 3)];
+                }
 
                 // تحديث العرض
                 document.getElementById('playerChoice').innerHTML = this.getRPSIcon(playerChoice);
@@ -2735,6 +2871,67 @@
             }
 
             aiDoozMove() {
+                // الذكاء الاصطناعي بمستوى الفائق
+                if (this.aiLevel === 'impossible') {
+                    // محاولة الفوز
+                    const winMove = this.findDoozWinningMove(2);
+                    if (winMove !== -1) {
+                        this.handleDoozClick(winMove);
+                        return;
+                    }
+                    
+                    // منع الفوز
+                    const blockMove = this.findDoozWinningMove(1);
+                    if (blockMove !== -1) {
+                        this.handleDoozClick(blockMove);
+                        return;
+                    }
+                    
+                    // اختيار استراتيجي
+                    const strategicMove = this.findStrategicMove();
+                    if (strategicMove !== -1) {
+                        this.handleDoozClick(strategicMove);
+                        return;
+                    }
+                }
+                
+                // الذكاء الاصطناعي بمستوى صعب
+                if (this.aiLevel === 'hard') {
+                    // 80% احتمال لاختيار حركة جيدة
+                    if (Math.random() < 0.8) {
+                        const winMove = this.findDoozWinningMove(2);
+                        if (winMove !== -1) {
+                            this.handleDoozClick(winMove);
+                            return;
+                        }
+                        
+                        const blockMove = this.findDoozWinningMove(1);
+                        if (blockMove !== -1) {
+                            this.handleDoozClick(blockMove);
+                            return;
+                        }
+                    }
+                }
+                
+                // الذكاء الاصطناعي بمستوى متوسط
+                if (this.aiLevel === 'medium') {
+                    // 60% احتمال لاختيار حركة جيدة
+                    if (Math.random() < 0.6) {
+                        const winMove = this.findDoozWinningMove(2);
+                        if (winMove !== -1) {
+                            this.handleDoozClick(winMove);
+                            return;
+                        }
+                        
+                        const blockMove = this.findDoozWinningMove(1);
+                        if (blockMove !== -1) {
+                            this.handleDoozClick(blockMove);
+                            return;
+                        }
+                    }
+                }
+                
+                // اختيار عشوائي للحركة المتبقية
                 const availableMoves = this.doozState.board
                     .map((cell, index) => cell === '' ? index : null)
                     .filter(index => index !== null);
@@ -2743,6 +2940,43 @@
                     const randomIndex = availableMoves[Math.floor(Math.random() * availableMoves.length)];
                     this.handleDoozClick(randomIndex);
                 }
+            }
+
+            findDoozWinningMove(player) {
+                for (const combination of this.doozState.winningCombinations) {
+                    const [a, b, c] = combination;
+                    const cells = [this.doozState.board[a], this.doozState.board[b], this.doozState.board[c]];
+                    
+                    // إذا كان هناك خليتان للاعب وخلية فارغة
+                    if (cells.filter(cell => cell === player).length === 2) {
+                        const emptyIndex = combination.find(index => this.doozState.board[index] === '');
+                        if (emptyIndex !== undefined) {
+                            return emptyIndex;
+                        }
+                    }
+                }
+                return -1;
+            }
+
+            findStrategicMove() {
+                // أولوية المركز
+                if (this.doozState.board[4] === '') return 4;
+                
+                // ثم الزوايا
+                const corners = [0, 2, 6, 8];
+                const availableCorners = corners.filter(index => this.doozState.board[index] === '');
+                if (availableCorners.length > 0) {
+                    return availableCorners[Math.floor(Math.random() * availableCorners.length)];
+                }
+                
+                // ثم الحواف
+                const edges = [1, 3, 5, 7];
+                const availableEdges = edges.filter(index => this.doozState.board[index] === '');
+                if (availableEdges.length > 0) {
+                    return availableEdges[Math.floor(Math.random() * availableEdges.length)];
+                }
+                
+                return -1;
             }
 
             checkDoozWin() {
