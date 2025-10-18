@@ -1,0 +1,2704 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1a1b2e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>🎮 GameZone - الألعاب الجماعية</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1a1b2e;
+            --secondary: #2d3047;
+            --accent: #00b4d8;
+            --accent-light: #90e0ef;
+            --accent-dark: #0077b6;
+            --success: #38b000;
+            --warning: #ff9e00;
+            --danger: #e63946;
+            --light: #f8f9fa;
+            --dark: #0d0e1a;
+            --gray: #8d99ae;
+            
+            --radius: 20px;
+            --radius-sm: 12px;
+            --radius-lg: 30px;
+            
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.4);
+            --shadow-sm: 0 4px 16px rgba(0, 0, 0, 0.2);
+            
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-fast: all 0.15s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            line-height: 1.6;
+            position: relative;
+            overflow-x: hidden;
+            touch-action: manipulation;
+        }
+
+        .background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(0, 180, 216, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(56, 176, 0, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(230, 57, 70, 0.05) 0%, transparent 50%);
+            z-index: -1;
+            animation: backgroundShift 20s ease-in-out infinite;
+        }
+
+        @keyframes backgroundShift {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(180deg); }
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            box-shadow: var(--shadow-lg);
+            margin-top: 20px;
+            transition: var(--transition);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--success), var(--warning));
+            animation: borderGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes borderGlow {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeInUp 1s ease;
+        }
+
+        .logo {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            display: block;
+            animation: bounce 2s infinite, glow 3s ease-in-out infinite;
+            filter: drop-shadow(0 0 20px rgba(0, 180, 216, 0.5));
+        }
+
+        @keyframes glow {
+            0%, 100% { filter: drop-shadow(0 0 20px rgba(0, 180, 216, 0.5)); }
+            50% { filter: drop-shadow(0 0 30px rgba(0, 180, 216, 0.8)); }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-light), var(--success));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 4px 20px rgba(0, 180, 216, 0.3);
+            animation: textShine 3s ease-in-out infinite;
+        }
+
+        @keyframes textShine {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .subtitle {
+            font-size: 1.4rem;
+            opacity: 0.9;
+            margin-bottom: 20px;
+            color: var(--accent-light);
+        }
+
+        /* الكروت */
+        .card {
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.1), 
+                rgba(255, 255, 255, 0.05));
+            border-radius: var(--radius);
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            animation: slideUp 0.6s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.1), 
+                transparent);
+            transition: var(--transition);
+        }
+
+        .card:hover::before {
+            left: 100%;
+        }
+
+        @keyframes slideUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(30px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+
+        @keyframes fadeInUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(20px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+
+        /* كرت الترحيب */
+        .welcome-card {
+            text-align: center;
+            padding: 50px 40px;
+        }
+
+        .welcome-card h2 {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            color: var(--light);
+        }
+
+        .features {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+
+        .feature {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius);
+            transition: var(--transition);
+        }
+
+        .feature:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .feature i {
+            font-size: 2rem;
+            color: var(--accent);
+        }
+
+        /* الأزرار */
+        .glow-button {
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: var(--radius);
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0, 180, 216, 0.3);
+        }
+
+        .glow-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.3), 
+                transparent);
+            transition: var(--transition);
+        }
+
+        .glow-button:hover::before {
+            left: 100%;
+        }
+
+        .glow-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(0, 180, 216, 0.5);
+        }
+
+        /* معلومات اللاعب */
+        .player-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.1), 
+                rgba(255, 255, 255, 0.05));
+            padding: 25px;
+            border-radius: var(--radius);
+            margin-bottom: 30px;
+            animation: slideUp 0.6s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .player-details {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .player-avatar {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .player-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .player-name {
+            font-weight: bold;
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .player-id {
+            color: var(--accent);
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .icon-button {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--light);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .icon-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(90deg);
+        }
+
+        /* خيارات البحث */
+        .search-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .option-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid transparent;
+            border-radius: var(--radius);
+            padding: 25px;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .option-card.active {
+            border-color: var(--accent);
+            background: rgba(0, 180, 216, 0.1);
+            transform: translateY(-5px);
+            box-shadow: var(--shadow);
+        }
+
+        .option-card:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .option-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: var(--accent);
+        }
+
+        .option-card.active .option-icon {
+            animation: bounce 2s infinite;
+        }
+
+        .option-text h3 {
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+            color: var(--light);
+        }
+
+        .option-text p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* محتوى البحث */
+        .search-content {
+            display: none;
+        }
+
+        .search-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .input-with-button {
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-with-button input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--light);
+            border: 2px solid transparent;
+            border-radius: var(--radius);
+            padding: 15px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .input-with-button input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.3);
+        }
+
+        .search-button {
+            background: linear-gradient(135deg, var(--success), #2d7d46);
+            color: white;
+            border: none;
+            padding: 0 25px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: var(--transition);
+            white-space: nowrap;
+        }
+
+        .search-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(56, 176, 0, 0.3);
+        }
+
+        .quick-actions {
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .quick-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .quick-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--light);
+            border: none;
+            padding: 10px 15px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.9rem;
+        }
+
+        .quick-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .styled-select {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--light);
+            border: 2px solid transparent;
+            border-radius: var(--radius);
+            padding: 15px;
+            font-size: 1rem;
+            transition: var(--transition);
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .styled-select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.3);
+        }
+
+        .ai-button {
+            background: linear-gradient(135deg, var(--warning), #cc7a00);
+            color: white;
+            border: none;
+            padding: 18px 30px;
+            border-radius: var(--radius);
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .ai-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(255, 158, 0, 0.3);
+        }
+
+        /* عرض الخصم */
+        .opponent-display {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: var(--radius);
+            margin-bottom: 30px;
+            border-left: 4px solid var(--accent);
+        }
+
+        .opponent-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--success), #2d7d46);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+
+        .opponent-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .opponent-name {
+            font-weight: bold;
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+        }
+
+        .game-mode {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* شبكة الألعاب */
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .game-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius);
+            padding: 25px;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--success));
+        }
+
+        .game-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--accent);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .game-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: var(--accent);
+        }
+
+        .game-info h3 {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            color: var(--light);
+        }
+
+        .game-info p {
+            color: var(--gray);
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+        }
+
+        .game-stats {
+            display: flex;
+            gap: 15px;
+            font-size: 0.85rem;
+            color: var(--accent-light);
+        }
+
+        .play-button {
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            width: 40px;
+            height: 40px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: var(--transition);
+        }
+
+        .game-card:hover .play-button {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* المودال */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(13, 14, 26, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+            animation: fadeIn 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 40px;
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 500px;
+            box-shadow: var(--shadow-lg);
+            animation: modalSlideUp 0.4s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+
+        @keyframes modalSlideUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(50px) scale(0.9); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0) scale(1); 
+            }
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .modal-header h2 {
+            font-size: 2rem;
+            color: var(--light);
+        }
+
+        .players-display {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .player-side {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .player-avatar.you {
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+        }
+
+        .player-avatar.opponent {
+            background: linear-gradient(135deg, var(--warning), #cc7a00);
+        }
+
+        .player-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .player-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        .player-name {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .vs-circle {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--danger), #c1121f);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: var(--shadow);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .game-info-modal {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: var(--radius);
+            margin-bottom: 30px;
+        }
+
+        .game-icon-modal {
+            font-size: 3rem;
+            color: var(--accent);
+        }
+
+        .game-details h3 {
+            font-size: 1.4rem;
+            margin-bottom: 5px;
+            color: var(--light);
+        }
+
+        .game-details p {
+            color: var(--gray);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .confirm-button {
+            flex: 2;
+            background: linear-gradient(135deg, var(--success), #2d7d46);
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: var(--radius);
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .confirm-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(56, 176, 0, 0.3);
+        }
+
+        .cancel-button {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--light);
+            border: none;
+            padding: 18px;
+            border-radius: var(--radius);
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .cancel-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* الإشعارات */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            color: white;
+            padding: 20px 25px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            z-index: 1001;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            max-width: 400px;
+            animation: notificationSlideIn 0.5s ease, notificationSlideOut 0.5s ease 4.5s forwards;
+            border-left: 4px solid var(--accent);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        @keyframes notificationSlideIn {
+            from { 
+                transform: translateX(100%); 
+                opacity: 0; 
+            }
+            to { 
+                transform: translateX(0); 
+                opacity: 1; 
+            }
+        }
+
+        @keyframes notificationSlideOut {
+            from { 
+                transform: translateX(0); 
+                opacity: 1; 
+            }
+            to { 
+                transform: translateX(100%); 
+                opacity: 0; 
+            }
+        }
+
+        .notification-icon {
+            font-size: 1.5rem;
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .notification-message {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .notification-close {
+            background: none;
+            border: none;
+            color: var(--gray);
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: var(--transition);
+            padding: 5px;
+        }
+
+        .notification-close:hover {
+            color: var(--light);
+        }
+
+        /* حقوق الملكية */
+        .copyright {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+            opacity: 0.7;
+            color: var(--accent-light);
+        }
+
+        /* الحالات المخفية */
+        .hidden {
+            display: none !important;
+        }
+
+        /* حقول الإدخال */
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: var(--light);
+        }
+
+        .form-group input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--light);
+            border: 2px solid transparent;
+            border-radius: var(--radius);
+            padding: 15px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.3);
+        }
+
+        .form-group input::placeholder {
+            color: var(--gray);
+        }
+
+        /* التحميل */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--accent);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* أقسام الألعاب */
+        .game-container {
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.1), 
+                rgba(255, 255, 255, 0.05));
+            border-radius: var(--radius);
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+            animation: slideUp 0.6s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .game-header h2 {
+            font-size: 2rem;
+            color: var(--light);
+        }
+
+        .back-button {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--light);
+            border: none;
+            padding: 12px 20px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* لعبة إكس أو */
+        .tictactoe-board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            max-width: 400px;
+            margin: 0 auto 30px;
+        }
+
+        .tictactoe-cell {
+            aspect-ratio: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .tictactoe-cell:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .tictactoe-cell.x {
+            color: var(--accent);
+        }
+
+        .tictactoe-cell.o {
+            color: var(--warning);
+        }
+
+        .game-info {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .player-turn {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: var(--accent);
+        }
+
+        .reset-button {
+            background: linear-gradient(135deg, var(--danger), #c1121f);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: var(--radius);
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .reset-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(230, 57, 70, 0.3);
+        }
+
+        /* لعبة حجر ورقة مقص */
+        .rps-choices {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .rps-choice {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .rps-choice:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .rps-results {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 30px 0;
+        }
+
+        .rps-player, .rps-opponent {
+            text-align: center;
+            flex: 1;
+        }
+
+        .rps-choice-display {
+            width: 120px;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            margin: 0 auto 15px;
+        }
+
+        /* لعبة الدوز */
+        .dooz-board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            max-width: 400px;
+            margin: 0 auto 30px;
+        }
+
+        .dooz-cell {
+            aspect-ratio: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .dooz-cell:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .dooz-cell.x {
+            color: var(--accent);
+        }
+
+        .dooz-cell.o {
+            color: var(--warning);
+        }
+
+        /* لعبة الحية والدرج */
+        .snake-board {
+            max-width: 600px;
+            margin: 0 auto 30px;
+        }
+
+        .board-grid {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 5px;
+        }
+
+        .board-cell {
+            aspect-ratio: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            position: relative;
+        }
+
+        .board-cell.player1::after {
+            content: '👤';
+            position: absolute;
+            font-size: 1.2rem;
+        }
+
+        .board-cell.player2::after {
+            content: '🤖';
+            position: absolute;
+            font-size: 1.2rem;
+        }
+
+        .board-cell.ladder {
+            background: rgba(56, 176, 0, 0.3);
+        }
+
+        .board-cell.snake {
+            background: rgba(230, 57, 70, 0.3);
+        }
+
+        .dice-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .dice {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin: 0 auto 20px;
+        }
+
+        .roll-button {
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: var(--radius);
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .roll-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 180, 216, 0.3);
+        }
+
+        /* التجاوب */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .search-options {
+                grid-template-columns: 1fr;
+            }
+            
+            .games-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .players-display {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .modal-actions {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .logo {
+                font-size: 4rem;
+            }
+            
+            .rps-choices {
+                gap: 10px;
+            }
+            
+            .rps-choice {
+                width: 80px;
+                height: 80px;
+                font-size: 2rem;
+            }
+            
+            .tictactoe-cell, .dooz-cell {
+                font-size: 2.5rem;
+            }
+            
+            .game-card {
+                padding: 20px;
+            }
+            
+            .welcome-card {
+                padding: 30px 20px;
+            }
+            
+            .features {
+                gap: 15px;
+            }
+            
+            .feature {
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            .features {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .input-with-button {
+                flex-direction: column;
+            }
+            
+            .search-button {
+                padding: 15px;
+            }
+            
+            .glow-button, .ai-button {
+                padding: 15px 25px;
+                font-size: 1.1rem;
+            }
+            
+            .player-info {
+                padding: 20px;
+            }
+            
+            .player-details {
+                gap: 15px;
+            }
+            
+            .player-avatar {
+                width: 50px;
+                height: 50px;
+                font-size: 1.3rem;
+            }
+            
+            .player-name {
+                font-size: 1.3rem;
+            }
+            
+            .player-id {
+                font-size: 1rem;
+            }
+            
+            .modal-content {
+                padding: 25px;
+            }
+            
+            .notification {
+                max-width: 90%;
+                right: 5%;
+                left: 5%;
+            }
+            
+            .board-grid {
+                gap: 3px;
+            }
+            
+            .board-cell {
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 360px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .logo {
+                font-size: 3rem;
+            }
+            
+            .subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .welcome-card h2 {
+                font-size: 2rem;
+            }
+            
+            .game-header h2 {
+                font-size: 1.6rem;
+            }
+            
+            .player-turn {
+                font-size: 1.1rem;
+            }
+            
+            .tictactoe-cell, .dooz-cell {
+                font-size: 2rem;
+            }
+            
+            .rps-choice {
+                width: 70px;
+                height: 70px;
+                font-size: 1.8rem;
+            }
+            
+            .rps-choice-display {
+                width: 100px;
+                height: 100px;
+                font-size: 2.5rem;
+            }
+        }
+
+        /* تحسينات للأجهزة المحمولة */
+        @media (hover: none) {
+            .card:hover::before {
+                left: -100%;
+            }
+            
+            .game-card:hover {
+                transform: none;
+                border-color: transparent;
+            }
+            
+            .game-card:hover .play-button {
+                opacity: 0;
+            }
+            
+            .glow-button:hover, .ai-button:hover, .search-button:hover, 
+            .quick-btn:hover, .icon-button:hover, .back-button:hover,
+            .confirm-button:hover, .cancel-button:hover, .reset-button:hover,
+            .roll-button:hover, .rps-choice:hover {
+                transform: none;
+            }
+            
+            .feature:hover {
+                transform: none;
+            }
+        }
+
+        /* إصلاح شريط العناوين على iOS */
+        @supports (-webkit-touch-callout: none) {
+            body {
+                min-height: -webkit-fill-available;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-animation"></div>
+    
+    <header>
+        <div class="logo">🎮</div>
+        <h1>GameZone</h1>
+        <p class="subtitle">تطبيق الألعاب الجماعية </p>
+    </header>
+
+    <div class="container">
+        <!-- قسم تسجيل اللاعب -->
+        <div id="playerRegistration" class="card welcome-card">
+            <h2><i class="fas fa-user-plus"></i> مرحباً في GameZone!</h2>
+            <div class="form-group">
+                <label for="username">أدخل اسمك للبدء:</label>
+                <input type="text" id="username" placeholder="اكتب اسمك هنا..." maxlength="20">
+            </div>
+            <button id="saveName" class="glow-button">
+                <i class="fas fa-play"></i> ابدأ اللعب
+            </button>
+            
+            <div class="features">
+                <div class="feature">
+                    <i class="fas fa-users"></i>
+                    <span>العب مع الأصدقاء</span>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-robot"></i>
+                    <span>تحدى الذكاء الاصطناعي</span>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-trophy"></i>
+                    <span>4 ألعاب ممتعة</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- معلومات اللاعب -->
+        <div id="playerInfo" class="player-info hidden">
+            <div class="player-details">
+                <div class="player-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="player-text">
+                    <span class="player-name" id="displayName">اللاعب</span>
+                    <span class="player-id">ID: <span id="displayId">0000</span></span>
+                </div>
+            </div>
+            <button id="changePlayer" class="icon-button">
+                <i class="fas fa-sign-out-alt"></i>
+            </button>
+        </div>
+
+        <!-- قسم البحث عن خصم -->
+        <div id="searchSection" class="card hidden">
+            <h2><i class="fas fa-search"></i> ابحث عن منافس</h2>
+            
+            <div class="search-options">
+                <div class="option-card active" id="friendOption">
+                    <div class="option-icon">
+                        <i class="fas fa-user-friends"></i>
+                    </div>
+                    <div class="option-text">
+                        <h3>العب مع صديق</h3>
+                        <p>ادخل ID صديقك للعب معه</p>
+                    </div>
+                </div>
+                
+                <div class="option-card" id="aiOption">
+                    <div class="option-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="option-text">
+                        <h3>تحدى الذكاء الاصطناعي</h3>
+                        <p>العب ضد الكمبيوتر</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- خيار اللعب مع صديق -->
+            <div id="friendSearch" class="search-content active">
+                <div class="form-group">
+                    <label for="searchId">أدخل ID الخصم:</label>
+                    <div class="input-with-button">
+                        <input type="text" id="searchId" placeholder="مثال: 1234" maxlength="4">
+                        <button id="searchBtn" class="search-button">
+                            <i class="fas fa-search"></i> بحث
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="quick-actions">
+                    <p>اختبار سريع:</p>
+                    <div class="quick-buttons">
+                        <button class="quick-btn" data-id="1111">ID: 1111</button>
+                        <button class="quick-btn" data-id="2222">ID: 2222</button>
+                        <button class="quick-btn" data-id="3333">ID: 3333</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- خيار الذكاء الاصطناعي -->
+            <div id="aiSearch" class="search-content">
+                <div class="form-group">
+                    <label for="aiDifficulty">اختر مستوى الصعوبة:</label>
+                    <select id="aiDifficulty" class="styled-select">
+                        <option value="easy">🟢 سهل - للمبتدئين</option>
+                        <option value="medium">🟡 متوسط - تحدي جيد</option>
+                        <option value="hard">🔴 صعب - للمحترفين</option>
+                    </select>
+                </div>
+                <button id="playWithAI" class="ai-button">
+                    <i class="fas fa-play"></i> ابدأ مع الذكاء الاصطناعي
+                </button>
+            </div>
+        </div>
+
+        <!-- قسم اختيار اللعبة -->
+        <div id="gameSelection" class="card hidden">
+            <h2><i class="fas fa-gamepad"></i> اختر لعبتك المفضلة</h2>
+            
+            <div class="opponent-display" id="opponentDisplay">
+                <div class="opponent-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="opponent-info">
+                    <span class="opponent-name" id="opponentNameText">الذكاء الاصطناعي</span>
+                    <span class="game-mode" id="gameModeText">متوسط الصعوبة</span>
+                </div>
+            </div>
+
+            <div class="games-grid">
+                <div class="game-card" data-game="snake">
+                    <div class="game-icon">
+                        <i class="fas fa-snake"></i>
+                    </div>
+                    <div class="game-info">
+                        <h3>حية والدرج</h3>
+                        <p>لعبة الحظ والاستراتيجية</p>
+                        <div class="game-stats">
+                            <span>👥 2 لاعبين</span>
+                            <span>⏱️ 10-15 دقيقة</span>
+                        </div>
+                    </div>
+                    <div class="play-button">
+                        <i class="fas fa-play"></i>
+                    </div>
+                </div>
+
+                <div class="game-card" data-game="tictactoe">
+                    <div class="game-icon">
+                        <i class="fas fa-times"></i>
+                    </div>
+                    <div class="game-info">
+                        <h3>إكس أو</h3>
+                        <p>لعبة الذكاء الكلاسيكية</p>
+                        <div class="game-stats">
+                            <span>👥 2 لاعبين</span>
+                            <span>⏱️ 5 دقائق</span>
+                        </div>
+                    </div>
+                    <div class="play-button">
+                        <i class="fas fa-play"></i>
+                    </div>
+                </div>
+
+                <div class="game-card" data-game="rps">
+                    <div class="game-icon">
+                        <i class="fas fa-hand-rock"></i>
+                    </div>
+                    <div class="game-info">
+                        <h3>حجر ورقة مقص</h3>
+                        <p>اختبار الحدس والتوقع</p>
+                        <div class="game-stats">
+                            <span>👥 2 لاعبين</span>
+                            <span>⏱️ سريعة</span>
+                        </div>
+                    </div>
+                    <div class="play-button">
+                        <i class="fas fa-play"></i>
+                    </div>
+                </div>
+
+                <div class="game-card" data-game="dooz">
+                    <div class="game-icon">
+                        <i class="fas fa-th-large"></i>
+                    </div>
+                    <div class="game-info">
+                        <h3>لعبة الدوز</h3>
+                        <p>التخطيط للفوز بخط واحد</p>
+                        <div class="game-stats">
+                            <span>👥 2 لاعبين</span>
+                            <span>⏱️ 5-10 دقائق</span>
+                        </div>
+                    </div>
+                    <div class="play-button">
+                        <i class="fas fa-play"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- أقسام الألعاب -->
+        <div id="snakeGame" class="game-container hidden">
+            <div class="game-header">
+                <h2><i class="fas fa-snake"></i> لعبة الحية والدرج</h2>
+                <button class="back-button" id="backFromSnake">
+                    <i class="fas fa-arrow-right"></i> العودة
+                </button>
+            </div>
+            
+            <div class="game-info">
+                <div class="player-turn">
+                    <span id="snakeTurn">دور: اللاعب 1</span>
+                </div>
+                <div class="dice-container">
+                    <div class="dice" id="snakeDice">
+                        <i class="fas fa-dice"></i>
+                    </div>
+                    <button class="roll-button" id="rollDice">
+                        <i class="fas fa-dice-d20"></i> رمي النرد
+                    </button>
+                </div>
+            </div>
+
+            <div class="snake-board">
+                <div class="board-grid" id="boardGrid"></div>
+            </div>
+        </div>
+
+        <div id="tictactoeGame" class="game-container hidden">
+            <div class="game-header">
+                <h2><i class="fas fa-times"></i> لعبة إكس أو</h2>
+                <button class="back-button" id="backFromTictactoe">
+                    <i class="fas fa-arrow-right"></i> العودة
+                </button>
+            </div>
+            
+            <div class="game-info">
+                <div class="player-turn">
+                    <span id="tictactoeTurn">دور: ❌</span>
+                </div>
+            </div>
+
+            <div class="tictactoe-board" id="tictactoeBoard"></div>
+            
+            <div class="game-info">
+                <button class="reset-button" id="resetTictactoe">
+                    <i class="fas fa-redo"></i> إعادة اللعبة
+                </button>
+            </div>
+        </div>
+
+        <div id="rpsGame" class="game-container hidden">
+            <div class="game-header">
+                <h2><i class="fas fa-hand-rock"></i> حجر ورقة مقص</h2>
+                <button class="back-button" id="backFromRps">
+                    <i class="fas fa-arrow-right"></i> العودة
+                </button>
+            </div>
+            
+            <div class="game-info">
+                <div class="player-turn">
+                    <span id="rpsTurn">اختر حركتك!</span>
+                </div>
+            </div>
+
+            <div class="rps-choices">
+                <button class="rps-choice" data-choice="rock">
+                    <i class="fas fa-hand-rock"></i>
+                </button>
+                <button class="rps-choice" data-choice="paper">
+                    <i class="fas fa-hand-paper"></i>
+                </button>
+                <button class="rps-choice" data-choice="scissors">
+                    <i class="fas fa-hand-scissors"></i>
+                </button>
+            </div>
+
+            <div class="rps-results">
+                <div class="rps-player">
+                    <div class="rps-choice-display" id="playerChoice">
+                        <i class="fas fa-question"></i>
+                    </div>
+                    <span>أنت</span>
+                </div>
+                
+                <div class="vs-circle">
+                    <span>VS</span>
+                </div>
+                
+                <div class="rps-opponent">
+                    <div class="rps-choice-display" id="opponentChoice">
+                        <i class="fas fa-question"></i>
+                    </div>
+                    <span id="opponentNameRps">الخصم</span>
+                </div>
+            </div>
+
+            <div class="game-info">
+                <h3 id="rpsResult">النتيجة تظهر هنا</h3>
+                <button class="reset-button" id="resetRps">
+                    <i class="fas fa-redo"></i> جولة جديدة
+                </button>
+            </div>
+        </div>
+
+        <div id="doozGame" class="game-container hidden">
+            <div class="game-header">
+                <h2><i class="fas fa-th-large"></i> لعبة الدوز</h2>
+                <button class="back-button" id="backFromDooz">
+                    <i class="fas fa-arrow-right"></i> العودة
+                </button>
+            </div>
+            
+            <div class="game-info">
+                <div class="player-turn">
+                    <span id="doozTurn">دور: ❌</span>
+                </div>
+            </div>
+
+            <div class="dooz-board" id="doozBoard"></div>
+            
+            <div class="game-info">
+                <button class="reset-button" id="resetDooz">
+                    <i class="fas fa-redo"></i> إعادة اللعبة
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة تأكيد بدء اللعبة -->
+    <div id="gameConfirmationModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-play-circle"></i> تأكيد بدء اللعبة</h2>
+            </div>
+            <div class="modal-body">
+                <div class="players-display">
+                    <div class="player-side">
+                        <div class="player-avatar you">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <span class="player-label">أنت</span>
+                        <span class="player-name" id="playerNameModal">اللاعب</span>
+                    </div>
+                    
+                    <div class="vs-circle">
+                        <span>VS</span>
+                    </div>
+                    
+                    <div class="player-side">
+                        <div class="player-avatar opponent">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <span class="player-label">الخصم</span>
+                        <span class="player-name" id="opponentNameModal">الذكاء الاصطناعي</span>
+                    </div>
+                </div>
+                
+                <div class="game-info-modal">
+                    <div class="game-icon-modal">
+                        <i class="fas fa-snake"></i>
+                    </div>
+                    <div class="game-details">
+                        <h3 id="selectedGameNameModal">حية والدرج</h3>
+                        <p id="gameDescriptionModal">لعبة الحظ والاستراتيجية</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button id="confirmGame" class="confirm-button">
+                    <i class="fas fa-play"></i> ابدأ اللعبة
+                </button>
+                <button id="cancelGame" class="cancel-button">
+                    <i class="fas fa-times"></i> إلغاء
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- منطقة الإشعارات -->
+    <div id="notificationContainer"></div>
+
+    <!-- حقوق الملكية -->
+    <div class="copyright">
+        تم التطوير بواسطة المهندس حسين محمد 2025
+    </div>
+
+    <script>
+        // تطبيق GameZone
+        class GameZone {
+            constructor() {
+                this.currentPlayer = { name: '', id: '' };
+                this.selectedOpponent = null;
+                this.selectedGame = '';
+                this.gameMode = '';
+                this.aiLevel = 'medium';
+                this.isSearching = false;
+                
+                // حالات الألعاب
+                this.tictactoeState = {
+                    board: ['', '', '', '', '', '', '', '', ''],
+                    currentPlayer: '❌',
+                    gameActive: true
+                };
+                
+                this.rpsState = {
+                    playerScore: 0,
+                    opponentScore: 0,
+                    rounds: 0
+                };
+                
+                this.snakeState = {
+                    players: [
+                        { position: 0, name: 'أنت' },
+                        { position: 0, name: 'الخصم' }
+                    ],
+                    currentPlayer: 0,
+                    gameActive: true,
+                    snakesAndLadders: {
+                        4: 14, 9: 31, 20: 38, 28: 84, 40: 59, 51: 67, 63: 81, 71: 91,
+                        17: 7, 54: 34, 62: 19, 64: 60, 87: 24, 93: 73, 95: 75, 99: 78
+                    }
+                };
+                
+                this.doozState = {
+                    board: ['', '', '', '', '', '', '', '', ''],
+                    currentPlayer: '❌',
+                    gameActive: true
+                };
+                
+                this.init();
+            }
+
+            init() {
+                this.bindEvents();
+                this.loadPlayerData();
+                this.initGames();
+            }
+
+            bindEvents() {
+                // تسجيل اللاعب
+                document.getElementById('saveName').addEventListener('click', () => this.registerPlayer());
+                document.getElementById('username').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') this.registerPlayer();
+                });
+
+                // تغيير اللاعب
+                document.getElementById('changePlayer').addEventListener('click', () => this.changePlayer());
+
+                // خيارات البحث
+                document.getElementById('friendOption').addEventListener('click', () => this.selectSearchOption('friend'));
+                document.getElementById('aiOption').addEventListener('click', () => this.selectSearchOption('ai'));
+
+                // البحث عن خصم
+                document.getElementById('searchBtn').addEventListener('click', () => this.searchForOpponent());
+                document.getElementById('searchId').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') this.searchForOpponent();
+                });
+
+                // الأزرار السريعة
+                document.querySelectorAll('.quick-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const id = e.target.dataset.id;
+                        document.getElementById('searchId').value = id;
+                        this.searchForOpponent();
+                    });
+                });
+
+                // الذكاء الاصطناعي
+                document.getElementById('playWithAI').addEventListener('click', () => this.playWithAI());
+
+                // اختيار الألعاب
+                document.querySelectorAll('.game-card').forEach(card => {
+                    card.addEventListener('click', (e) => {
+                        const game = e.currentTarget.dataset.game;
+                        this.selectGame(game);
+                    });
+                });
+
+                // المودال
+                document.getElementById('confirmGame').addEventListener('click', () => this.startSelectedGame());
+                document.getElementById('cancelGame').addEventListener('click', () => this.hideModal());
+
+                // إغلاق المودال بالنقر خارجها
+                document.getElementById('gameConfirmationModal').addEventListener('click', (e) => {
+                    if (e.target === e.currentTarget) this.hideModal();
+                });
+
+                // أزرار العودة من الألعاب
+                document.getElementById('backFromSnake').addEventListener('click', () => this.backToMain());
+                document.getElementById('backFromTictactoe').addEventListener('click', () => this.backToMain());
+                document.getElementById('backFromRps').addEventListener('click', () => this.backToMain());
+                document.getElementById('backFromDooz').addEventListener('click', () => this.backToMain());
+            }
+
+            registerPlayer() {
+                const usernameInput = document.getElementById('username');
+                const username = usernameInput.value.trim();
+                
+                if (!username) {
+                    this.showNotification('خطأ في التسجيل', 'يرجى إدخال اسم اللاعب', 'error');
+                    usernameInput.focus();
+                    return;
+                }
+                
+                if (username.length < 2) {
+                    this.showNotification('خطأ في التسجيل', 'اسم اللاعب يجب أن يكون على الأقل حرفين', 'error');
+                    usernameInput.focus();
+                    return;
+                }
+                
+                // توليد ID فريد
+                const userId = Math.floor(1000 + Math.random() * 9000);
+                
+                localStorage.setItem('playerName', username);
+                localStorage.setItem('playerId', userId);
+                
+                this.currentPlayer.name = username;
+                this.currentPlayer.id = userId;
+                this.updatePlayerDisplay();
+                this.showGameSelection();
+                
+                this.showNotification(
+                    'تم التسجيل بنجاح! 🎉',
+                    `ID الخاص بك هو: ${userId} - شاركه مع أصدقائك!`,
+                    'success'
+                );
+            }
+
+            updatePlayerDisplay() {
+                document.getElementById('displayName').textContent = this.currentPlayer.name;
+                document.getElementById('displayId').textContent = this.currentPlayer.id;
+                document.getElementById('playerNameModal').textContent = this.currentPlayer.name;
+            }
+
+            loadPlayerData() {
+                const savedName = localStorage.getItem('playerName');
+                const savedId = localStorage.getItem('playerId');
+                
+                if (savedName && savedId) {
+                    this.currentPlayer.name = savedName;
+                    this.currentPlayer.id = savedId;
+                    this.updatePlayerDisplay();
+                    this.showGameSelection();
+                    
+                    this.showNotification(
+                        'مرحباً بعودتك! 👋',
+                        `تم تحميل بياناتك: ${savedName}`,
+                        'success'
+                    );
+                }
+            }
+
+            showNotification(title, message, type = 'info') {
+                const notification = document.createElement('div');
+                notification.className = 'notification';
+                notification.innerHTML = `
+                    <div class="notification-icon">
+                        <i class="fas fa-${type === 'error' ? 'times-circle' : type === 'success' ? 'check-circle' : 'info-circle'}"></i>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">${title}</div>
+                        <div class="notification-message">${message}</div>
+                    </div>
+                    <button class="notification-close" onclick="this.parentElement.remove()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                
+                document.getElementById('notificationContainer').appendChild(notification);
+                
+                // إزالة تلقائية بعد 5 ثواني
+                setTimeout(() => {
+                    if (notification.parentElement) {
+                        notification.remove();
+                    }
+                }, 5000);
+            }
+
+            selectSearchOption(option) {
+                const friendOption = document.getElementById('friendOption');
+                const aiOption = document.getElementById('aiOption');
+                const friendSearch = document.getElementById('friendSearch');
+                const aiSearch = document.getElementById('aiSearch');
+
+                if (option === 'friend') {
+                    friendOption.classList.add('active');
+                    aiOption.classList.remove('active');
+                    friendSearch.classList.add('active');
+                    aiSearch.classList.remove('active');
+                } else {
+                    aiOption.classList.add('active');
+                    friendOption.classList.remove('active');
+                    aiSearch.classList.add('active');
+                    friendSearch.classList.remove('active');
+                }
+            }
+
+            searchForOpponent() {
+                if (this.isSearching) return;
+                
+                const searchIdInput = document.getElementById('searchId');
+                const opponentId = searchIdInput.value.trim();
+                
+                if (!opponentId) {
+                    this.showNotification('خطأ في البحث', 'يرجى إدخال ID الخصم', 'error');
+                    searchIdInput.focus();
+                    return;
+                }
+                
+                if (opponentId.length !== 4) {
+                    this.showNotification('خطأ في البحث', 'ID يجب أن يتكون من 4 أرقام', 'error');
+                    searchIdInput.focus();
+                    return;
+                }
+                
+                if (opponentId === this.currentPlayer.id) {
+                    this.showNotification('خطأ في البحث', 'لا يمكنك البحث عن نفسك!', 'error');
+                    searchIdInput.focus();
+                    return;
+                }
+                
+                this.isSearching = true;
+                const searchBtn = document.getElementById('searchBtn');
+                searchBtn.disabled = true;
+                searchBtn.innerHTML = '<span class="loading"></span> جاري البحث...';
+                
+                this.showNotification(
+                    'جاري البحث عن الخصم',
+                    'يتم الآن البحث عن اللاعب المراد...',
+                    'info'
+                );
+                
+                // محاكاة البحث
+                setTimeout(() => {
+                    this.selectedOpponent = {
+                        name: `اللاعب ${opponentId}`,
+                        id: opponentId
+                    };
+                    
+                    this.isSearching = false;
+                    searchBtn.disabled = false;
+                    searchBtn.innerHTML = '<i class="fas fa-search"></i> بحث';
+                    
+                    this.gameMode = 'friend';
+                    this.enableGameButtons();
+                    this.updateOpponentDisplay();
+                    
+                    this.showNotification(
+                        'تم العثور على الخصم! 🎯',
+                        `يمكنك الآن اختيار اللعبة مع ${this.selectedOpponent.name}`,
+                        'success'
+                    );
+                }, 2000);
+            }
+
+            playWithAI() {
+                this.aiLevel = document.getElementById('aiDifficulty').value;
+                this.gameMode = 'ai';
+                this.selectedOpponent = {
+                    name: `الذكاء الاصطناعي (${this.getAIDifficultyText()})`,
+                    id: 'AI'
+                };
+                
+                this.enableGameButtons();
+                this.updateOpponentDisplay();
+                
+                this.showNotification(
+                    'تم تفعيل الذكاء الاصطناعي! 🤖',
+                    `مستوى الصعوبة: ${this.getAIDifficultyText()}`,
+                    'success'
+                );
+            }
+
+            getAIDifficultyText() {
+                const levels = {
+                    easy: 'سهل',
+                    medium: 'متوسط', 
+                    hard: 'صعب'
+                };
+                return levels[this.aiLevel];
+            }
+
+            updateOpponentDisplay() {
+                document.getElementById('opponentNameText').textContent = this.selectedOpponent.name;
+                document.getElementById('opponentNameModal').textContent = this.selectedOpponent.name;
+                document.getElementById('gameModeText').textContent = this.gameMode === 'ai' ? 
+                    `${this.getAIDifficultyText()} الصعوبة` : 'العب مع صديق';
+            }
+
+            enableGameButtons() {
+                document.querySelectorAll('.game-card').forEach(card => {
+                    card.style.opacity = '1';
+                    card.style.pointerEvents = 'auto';
+                });
+            }
+
+            selectGame(game) {
+                if (!this.gameMode) {
+                    this.showNotification(
+                        'لم تختر نمط اللعب',
+                        'يرجى البحث عن خصم أو تفعيل الذكاء الاصطناعي أولاً',
+                        'warning'
+                    );
+                    return;
+                }
+                
+                this.selectedGame = game;
+                this.showGameModal();
+            }
+
+            showGameModal() {
+                const gameInfo = {
+                    snake: { name: 'حية والدرج', desc: 'لعبة الحظ والاستراتيجية', icon: 'fas fa-snake' },
+                    tictactoe: { name: 'إكس أو', desc: 'لعبة الذكاء الكلاسيكية', icon: 'fas fa-times' },
+                    rps: { name: 'حجر ورقة مقص', desc: 'اختبار الحدس والتوقع', icon: 'fas fa-hand-rock' },
+                    dooz: { name: 'لعبة الدوز', desc: 'التخطيط للفوز بخط واحد', icon: 'fas fa-th-large' }
+                };
+                
+                const info = gameInfo[this.selectedGame];
+                document.getElementById('selectedGameNameModal').textContent = info.name;
+                document.getElementById('gameDescriptionModal').textContent = info.desc;
+                
+                const iconElement = document.querySelector('.game-icon-modal i');
+                iconElement.className = info.icon;
+                
+                document.getElementById('gameConfirmationModal').classList.remove('hidden');
+            }
+
+            hideModal() {
+                document.getElementById('gameConfirmationModal').classList.add('hidden');
+            }
+
+            startSelectedGame() {
+                this.hideModal();
+                this.hideAllSections();
+                
+                // عرض اللعبة المحددة
+                document.getElementById(`${this.selectedGame}Game`).classList.remove('hidden');
+                
+                // تهيئة اللعبة المحددة
+                this.initSelectedGame();
+                
+                this.showNotification(
+                    'بدأت اللعبة! 🎮',
+                    `حظاً طيباً في ${this.getGameName(this.selectedGame)}`,
+                    'success'
+                );
+            }
+
+            initSelectedGame() {
+                switch(this.selectedGame) {
+                    case 'tictactoe':
+                        this.initTictactoeGame();
+                        break;
+                    case 'rps':
+                        this.initRPSGame();
+                        break;
+                    case 'snake':
+                        this.initSnakeGame();
+                        break;
+                    case 'dooz':
+                        this.initDoozGame();
+                        break;
+                }
+            }
+
+            backToMain() {
+                this.hideAllSections();
+                this.showGameSelection();
+            }
+
+            hideAllSections() {
+                const sections = [
+                    'playerRegistration', 'playerInfo', 'searchSection', 
+                    'gameSelection', 'snakeGame', 'tictactoeGame', 
+                    'rpsGame', 'doozGame'
+                ];
+                
+                sections.forEach(section => {
+                    document.getElementById(section).classList.add('hidden');
+                });
+                this.hideModal();
+            }
+
+            showGameSelection() {
+                this.hideAllSections();
+                document.getElementById('playerInfo').classList.remove('hidden');
+                document.getElementById('searchSection').classList.remove('hidden');
+                document.getElementById('gameSelection').classList.remove('hidden');
+            }
+
+            changePlayer() {
+                if (confirm('هل تريد حقاً تغيير اللاعب؟ سيتم فقدان بياناتك الحالية.')) {
+                    localStorage.removeItem('playerName');
+                    localStorage.removeItem('playerId');
+                    this.showMainScreen();
+                    document.getElementById('username').value = '';
+                    document.getElementById('username').focus();
+                }
+            }
+
+            showMainScreen() {
+                this.hideAllSections();
+                document.getElementById('playerRegistration').classList.remove('hidden');
+            }
+
+            getGameName(game) {
+                const names = {
+                    snake: 'حية والدرج',
+                    tictactoe: 'إكس أو',
+                    rps: 'حجر ورقة مقص', 
+                    dooz: 'لعبة الدوز'
+                };
+                return names[game];
+            }
+
+            initGames() {
+                // سيتم تهيئة الألعاب عند بدئها
+            }
+
+            // لعبة إكس أو (Tic Tac Toe)
+            initTictactoeGame() {
+                const boardElement = document.getElementById('tictactoeBoard');
+                boardElement.innerHTML = '';
+                
+                this.tictactoeState.board.fill('');
+                this.tictactoeState.currentPlayer = '❌';
+                this.tictactoeState.gameActive = true;
+                
+                document.getElementById('tictactoeTurn').textContent = 'دور: ❌';
+                document.getElementById('tictactoeTurn').style.color = '#00b4d8';
+
+                for (let i = 0; i < 9; i++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'tictactoe-cell';
+                    cell.dataset.index = i;
+                    cell.addEventListener('click', () => this.handleTictactoeClick(i));
+                    boardElement.appendChild(cell);
+                }
+
+                document.getElementById('resetTictactoe').addEventListener('click', () => this.resetTictactoe());
+            }
+
+            handleTictactoeClick(index) {
+                if (!this.tictactoeState.gameActive || this.tictactoeState.board[index] !== '') return;
+
+                this.tictactoeState.board[index] = this.tictactoeState.currentPlayer;
+                document.querySelector(`#tictactoeBoard [data-index="${index}"]`).textContent = this.tictactoeState.currentPlayer;
+                document.querySelector(`#tictactoeBoard [data-index="${index}"]`).classList.add(this.tictactoeState.currentPlayer === '❌' ? 'x' : 'o');
+
+                if (this.checkTictactoeWin()) {
+                    this.endTictactoeGame(`فاز ${this.tictactoeState.currentPlayer}! 🎉`, 'win');
+                    return;
+                }
+
+                if (this.tictactoeState.board.every(cell => cell !== '')) {
+                    this.endTictactoeGame('تعادل! 🤝', 'draw');
+                    return;
+                }
+
+                this.tictactoeState.currentPlayer = this.tictactoeState.currentPlayer === '❌' ? '⭕️' : '❌';
+                document.getElementById('tictactoeTurn').textContent = `دور: ${this.tictactoeState.currentPlayer}`;
+
+                // إذا كان ضد الذكاء الاصطناعي
+                if (this.gameMode === 'ai' && this.tictactoeState.currentPlayer === '⭕️') {
+                    setTimeout(() => this.aiTictactoeMove(), 500);
+                }
+            }
+
+            aiTictactoeMove() {
+                const availableMoves = this.tictactoeState.board
+                    .map((cell, index) => cell === '' ? index : null)
+                    .filter(index => index !== null);
+
+                if (availableMoves.length > 0) {
+                    const randomIndex = availableMoves[Math.floor(Math.random() * availableMoves.length)];
+                    this.handleTictactoeClick(randomIndex);
+                }
+            }
+
+            checkTictactoeWin() {
+                const winPatterns = [
+                    [0, 1, 2], [3, 4, 5], [6, 7, 8], // صفوف
+                    [0, 3, 6], [1, 4, 7], [2, 5, 8], // أعمدة
+                    [0, 4, 8], [2, 4, 6]             // أقطار
+                ];
+
+                return winPatterns.some(pattern => {
+                    const [a, b, c] = pattern;
+                    return this.tictactoeState.board[a] && 
+                           this.tictactoeState.board[a] === this.tictactoeState.board[b] && 
+                           this.tictactoeState.board[a] === this.tictactoeState.board[c];
+                });
+            }
+
+            endTictactoeGame(message, type) {
+                this.tictactoeState.gameActive = false;
+                document.getElementById('tictactoeTurn').textContent = message;
+                document.getElementById('tictactoeTurn').style.color = type === 'win' ? '#38b000' : '#ff9e00';
+            }
+
+            resetTictactoe() {
+                this.tictactoeState.board.fill('');
+                this.tictactoeState.currentPlayer = '❌';
+                this.tictactoeState.gameActive = true;
+
+                document.querySelectorAll('#tictactoeBoard .tictactoe-cell').forEach(cell => {
+                    cell.textContent = '';
+                    cell.classList.remove('x', 'o');
+                });
+
+                document.getElementById('tictactoeTurn').textContent = 'دور: ❌';
+                document.getElementById('tictactoeTurn').style.color = '#00b4d8';
+            }
+
+            // لعبة حجر ورقة مقص (Rock Paper Scissors)
+            initRPSGame() {
+                this.rpsState.playerScore = 0;
+                this.rpsState.opponentScore = 0;
+                this.rpsState.rounds = 0;
+                
+                document.getElementById('playerChoice').innerHTML = '<i class="fas fa-question"></i>';
+                document.getElementById('opponentChoice').innerHTML = '<i class="fas fa-question"></i>';
+                document.getElementById('rpsResult').textContent = 'النتيجة تظهر هنا';
+                document.getElementById('rpsResult').style.color = '#f8f9fa';
+                document.getElementById('rpsTurn').textContent = 'اختر حركتك!';
+
+                document.querySelectorAll('.rps-choice').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const playerChoice = e.currentTarget.dataset.choice;
+                        this.playRPS(playerChoice);
+                    });
+                });
+
+                document.getElementById('resetRps').addEventListener('click', () => this.resetRPS());
+            }
+
+            playRPS(playerChoice) {
+                const choices = ['rock', 'paper', 'scissors'];
+                const opponentChoice = this.gameMode === 'ai' ? 
+                    choices[Math.floor(Math.random() * 3)] : 
+                    choices[Math.floor(Math.random() * 3)];
+
+                // تحديث العرض
+                document.getElementById('playerChoice').innerHTML = this.getRPSIcon(playerChoice);
+                document.getElementById('opponentChoice').innerHTML = this.getRPSIcon(opponentChoice);
+
+                // تحديد الفائز
+                const result = this.getRPSResult(playerChoice, opponentChoice);
+                document.getElementById('rpsResult').textContent = result.message;
+                document.getElementById('rpsResult').style.color = result.color;
+                
+                this.rpsState.rounds++;
+                
+                if (result.type === 'win') {
+                    this.rpsState.playerScore++;
+                } else if (result.type === 'lose') {
+                    this.rpsState.opponentScore++;
+                }
+                
+                // تحديث النتيجة
+                setTimeout(() => {
+                    document.getElementById('rpsResult').textContent = 
+                        `النتيجة: ${this.rpsState.playerScore} - ${this.rpsState.opponentScore} (${this.rpsState.rounds} جولة)`;
+                }, 2000);
+            }
+
+            getRPSIcon(choice) {
+                const icons = {
+                    rock: '<i class="fas fa-hand-rock"></i>',
+                    paper: '<i class="fas fa-hand-paper"></i>',
+                    scissors: '<i class="fas fa-hand-scissors"></i>'
+                };
+                return icons[choice];
+            }
+
+            getRPSResult(player, opponent) {
+                if (player === opponent) {
+                    return { message: 'تعادل! 🤝', color: '#ff9e00', type: 'draw' };
+                }
+
+                if (
+                    (player === 'rock' && opponent === 'scissors') ||
+                    (player === 'paper' && opponent === 'rock') ||
+                    (player === 'scissors' && opponent === 'paper')
+                ) {
+                    return { message: 'فزت! 🎉', color: '#38b000', type: 'win' };
+                }
+
+                return { message: 'خسرت! 😞', color: '#e63946', type: 'lose' };
+            }
+
+            resetRPS() {
+                this.rpsState.playerScore = 0;
+                this.rpsState.opponentScore = 0;
+                this.rpsState.rounds = 0;
+                
+                document.getElementById('playerChoice').innerHTML = '<i class="fas fa-question"></i>';
+                document.getElementById('opponentChoice').innerHTML = '<i class="fas fa-question"></i>';
+                document.getElementById('rpsResult').textContent = 'النتيجة تظهر هنا';
+                document.getElementById('rpsResult').style.color = '#f8f9fa';
+                document.getElementById('rpsTurn').textContent = 'اختر حركتك!';
+            }
+
+            // لعبة الحية والدرج (Snake and Ladder)
+            initSnakeGame() {
+                this.createSnakeBoard();
+                document.getElementById('rollDice').addEventListener('click', () => this.rollSnakeDice());
+                document.getElementById('snakeTurn').textContent = 'دور: اللاعب 1';
+                
+                this.snakeState.players[0].position = 0;
+                this.snakeState.players[1].position = 0;
+                this.snakeState.currentPlayer = 0;
+                this.snakeState.gameActive = true;
+            }
+
+            createSnakeBoard() {
+                const boardGrid = document.getElementById('boardGrid');
+                boardGrid.innerHTML = '';
+
+                for (let i = 100; i >= 1; i--) {
+                    const cell = document.createElement('div');
+                    cell.className = 'board-cell';
+                    cell.textContent = i;
+
+                    if (this.snakeState.snakesAndLadders[i]) {
+                        const isLadder = this.snakeState.snakesAndLadders[i] > i;
+                        cell.classList.add(isLadder ? 'ladder' : 'snake');
+                    }
+
+                    boardGrid.appendChild(cell);
+                }
+
+                this.updateSnakeBoard();
+            }
+
+            updateSnakeBoard() {
+                // إزالة اللاعبين السابقين
+                document.querySelectorAll('.board-cell').forEach(cell => {
+                    cell.classList.remove('player1', 'player2');
+                });
+
+                // إضافة اللاعبين الجدد
+                const player1Cell = document.querySelectorAll('.board-cell')[100 - this.snakeState.players[0].position];
+                const player2Cell = document.querySelectorAll('.board-cell')[100 - this.snakeState.players[1].position];
+
+                if (player1Cell && this.snakeState.players[0].position > 0) player1Cell.classList.add('player1');
+                if (player2Cell && this.snakeState.players[1].position > 0) player2Cell.classList.add('player2');
+            }
+
+            rollSnakeDice() {
+                if (!this.snakeState.gameActive) return;
+                if (this.gameMode === 'ai' && this.snakeState.currentPlayer === 1) return;
+
+                const diceValue = Math.floor(Math.random() * 6) + 1;
+                const diceElement = document.getElementById('snakeDice');
+                
+                // تأثير رمي النرد
+                diceElement.style.animation = 'none';
+                setTimeout(() => {
+                    diceElement.style.animation = 'bounce 0.5s ease';
+                    diceElement.innerHTML = this.getDiceFace(diceValue);
+                }, 10);
+
+                setTimeout(() => {
+                    this.moveSnakePlayer(diceValue);
+                }, 500);
+            }
+
+            getDiceFace(value) {
+                const faces = [
+                    '<i class="fas fa-dice-one"></i>',
+                    '<i class="fas fa-dice-two"></i>',
+                    '<i class="fas fa-dice-three"></i>',
+                    '<i class="fas fa-dice-four"></i>',
+                    '<i class="fas fa-dice-five"></i>',
+                    '<i class="fas fa-dice-six"></i>'
+                ];
+                return faces[value - 1];
+            }
+
+            moveSnakePlayer(diceValue) {
+                const player = this.snakeState.players[this.snakeState.currentPlayer];
+                player.position += diceValue;
+
+                // التحقق من السلالم والثعابين
+                if (this.snakeState.snakesAndLadders[player.position]) {
+                    const newPosition = this.snakeState.snakesAndLadders[player.position];
+                    const isLadder = newPosition > player.position;
+                    
+                    this.showNotification(
+                        isLadder ? 'سلم! 🪜' : 'ثعبان! 🐍',
+                        `${player.name} ${isLadder ? 'صعد' : 'هبط'} من ${player.position} إلى ${newPosition}`,
+                        isLadder ? 'success' : 'error'
+                    );
+                    
+                    player.position = newPosition;
+                }
+
+                // التحقق من الفوز
+                if (player.position >= 100) {
+                    player.position = 100;
+                    this.endSnakeGame(`${player.name} فاز! 🎉`);
+                    return;
+                }
+
+                this.updateSnakeBoard();
+                document.getElementById('snakeTurn').textContent = `دور: ${this.snakeState.players[this.snakeState.currentPlayer].name}`;
+
+                // تبديل اللاعب
+                this.snakeState.currentPlayer = (this.snakeState.currentPlayer + 1) % 2;
+
+                // إذا كان ضد الذكاء الاصطناعي
+                if (this.gameMode === 'ai' && this.snakeState.currentPlayer === 1) {
+                    setTimeout(() => this.aiSnakeRollDice(), 1000);
+                }
+            }
+
+            aiSnakeRollDice() {
+                if (!this.snakeState.gameActive) return;
+
+                const diceValue = Math.floor(Math.random() * 6) + 1;
+                const diceElement = document.getElementById('snakeDice');
+                
+                diceElement.style.animation = 'none';
+                setTimeout(() => {
+                    diceElement.style.animation = 'bounce 0.5s ease';
+                    diceElement.innerHTML = this.getDiceFace(diceValue);
+                }, 10);
+
+                setTimeout(() => {
+                    this.moveSnakePlayer(diceValue);
+                }, 500);
+            }
+
+            endSnakeGame(message) {
+                this.snakeState.gameActive = false;
+                document.getElementById('snakeTurn').textContent = message;
+                document.getElementById('snakeTurn').style.color = '#38b000';
+                document.getElementById('rollDice').disabled = true;
+
+                this.showNotification(
+                    'انتهت اللعبة! 🏆',
+                    message,
+                    'success'
+                );
+            }
+
+            // لعبة الدوز
+            initDoozGame() {
+                const boardElement = document.getElementById('doozBoard');
+                boardElement.innerHTML = '';
+                
+                this.doozState.board.fill('');
+                this.doozState.currentPlayer = '❌';
+                this.doozState.gameActive = true;
+                
+                document.getElementById('doozTurn').textContent = 'دور: ❌';
+                document.getElementById('doozTurn').style.color = '#00b4d8';
+
+                for (let i = 0; i < 9; i++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'dooz-cell';
+                    cell.dataset.index = i;
+                    cell.addEventListener('click', () => this.handleDoozClick(i));
+                    boardElement.appendChild(cell);
+                }
+
+                document.getElementById('resetDooz').addEventListener('click', () => this.resetDooz());
+            }
+
+            handleDoozClick(index) {
+                if (!this.doozState.gameActive || this.doozState.board[index] !== '') return;
+
+                this.doozState.board[index] = this.doozState.currentPlayer;
+                document.querySelector(`#doozBoard [data-index="${index}"]`).textContent = this.doozState.currentPlayer;
+                document.querySelector(`#doozBoard [data-index="${index}"]`).classList.add(this.doozState.currentPlayer === '❌' ? 'x' : 'o');
+
+                if (this.checkDoozWin()) {
+                    this.endDoozGame(`فاز ${this.doozState.currentPlayer}! 🎉`, 'win');
+                    return;
+                }
+
+                if (this.doozState.board.every(cell => cell !== '')) {
+                    this.endDoozGame('تعادل! 🤝', 'draw');
+                    return;
+                }
+
+                this.doozState.currentPlayer = this.doozState.currentPlayer === '❌' ? '⭕️' : '❌';
+                document.getElementById('doozTurn').textContent = `دور: ${this.doozState.currentPlayer}`;
+
+                // إذا كان ضد الذكاء الاصطناعي
+                if (this.gameMode === 'ai' && this.doozState.currentPlayer === '⭕️') {
+                    setTimeout(() => this.aiDoozMove(), 500);
+                }
+            }
+
+            aiDoozMove() {
+                const availableMoves = this.doozState.board
+                    .map((cell, index) => cell === '' ? index : null)
+                    .filter(index => index !== null);
+
+                if (availableMoves.length > 0) {
+                    const randomIndex = availableMoves[Math.floor(Math.random() * availableMoves.length)];
+                    this.handleDoozClick(randomIndex);
+                }
+            }
+
+            checkDoozWin() {
+                const winPatterns = [
+                    [0, 1, 2], [3, 4, 5], [6, 7, 8], // صفوف
+                    [0, 3, 6], [1, 4, 7], [2, 5, 8], // أعمدة
+                    [0, 4, 8], [2, 4, 6]             // أقطار
+                ];
+
+                return winPatterns.some(pattern => {
+                    const [a, b, c] = pattern;
+                    return this.doozState.board[a] && 
+                           this.doozState.board[a] === this.doozState.board[b] && 
+                           this.doozState.board[a] === this.doozState.board[c];
+                });
+            }
+
+            endDoozGame(message, type) {
+                this.doozState.gameActive = false;
+                document.getElementById('doozTurn').textContent = message;
+                document.getElementById('doozTurn').style.color = type === 'win' ? '#38b000' : '#ff9e00';
+            }
+
+            resetDooz() {
+                this.doozState.board.fill('');
+                this.doozState.currentPlayer = '❌';
+                this.doozState.gameActive = true;
+
+                document.querySelectorAll('#doozBoard .dooz-cell').forEach(cell => {
+                    cell.textContent = '';
+                    cell.classList.remove('x', 'o');
+                });
+
+                document.getElementById('doozTurn').textContent = 'دور: ❌';
+                document.getElementById('doozTurn').style.color = '#00b4d8';
+            }
+        }
+
+        // بدء التطبيق عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', function() {
+            window.gameZone = new GameZone();
+        });
+    </script>
+</body>
+</html>
