@@ -1128,37 +1128,93 @@
             margin: 0 auto 15px;
         }
 
-        /* لعبة الدوز */
+        /* لعبة الدوز - تصميم جديد */
         .dooz-board {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            max-width: 400px;
+            gap: 15px;
+            max-width: 450px;
             margin: 0 auto 30px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
         }
 
         .dooz-cell {
             aspect-ratio: 1;
             background: rgba(255, 255, 255, 0.1);
-            border-radius: var(--radius-sm);
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2rem;
+            font-size: 2.5rem;
             cursor: pointer;
+            transition: var(--transition);
+            border: 3px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dooz-cell::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, transparent 30%, rgba(255, 255, 255, 0.1) 100%);
+            opacity: 0;
             transition: var(--transition);
         }
 
+        .dooz-cell:hover::before {
+            opacity: 1;
+        }
+
         .dooz-cell:hover {
-            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+            border-color: var(--accent);
         }
 
-        .dooz-cell.x {
-            color: var(--accent);
+        .dooz-cell.player1 {
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            box-shadow: 0 0 20px rgba(0, 180, 216, 0.5);
+            border-color: var(--accent-light);
         }
 
-        .dooz-cell.o {
-            color: var(--warning);
+        .dooz-cell.player2 {
+            background: linear-gradient(135deg, var(--warning), #cc7a00);
+            box-shadow: 0 0 20px rgba(255, 158, 0, 0.5);
+            border-color: #ffb74d;
+        }
+
+        .dooz-cell.winning {
+            animation: winningCell 1s ease infinite;
+        }
+
+        @keyframes winningCell {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(56, 176, 0, 0.7); }
+            50% { transform: scale(1.1); box-shadow: 0 0 30px rgba(56, 176, 0, 1); }
+        }
+
+        .dooz-connections {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .connection-line {
+            position: absolute;
+            background: var(--success);
+            height: 8px;
+            border-radius: 4px;
+            transform-origin: 0 0;
+            z-index: 1;
+            box-shadow: 0 0 10px var(--success);
         }
 
         /* لعبة الحية والدرج */
@@ -1369,6 +1425,15 @@
             .board-cell {
                 font-size: 0.8rem;
             }
+            
+            .dooz-board {
+                gap: 10px;
+                padding: 15px;
+            }
+            
+            .dooz-cell {
+                font-size: 2rem;
+            }
         }
 
         @media (max-width: 360px) {
@@ -1438,6 +1503,11 @@
             .feature:hover {
                 transform: none;
             }
+            
+            .dooz-cell:hover {
+                transform: none;
+                border-color: transparent;
+            }
         }
 
         /* إصلاح شريط العناوين على iOS */
@@ -1454,7 +1524,7 @@
     <header>
         <div class="logo">🎮</div>
         <h1>GameZone</h1>
-        <p class="subtitle">تطبيق الألعاب الجماعية </p>
+        <p class="subtitle">تطبيق الألعاب الجماعية - تحدّي الأصدقاء أو الذكاء الاصطناعي!</p>
     </header>
 
     <div class="container">
@@ -1755,6 +1825,7 @@
             </div>
         </div>
 
+        <!-- لعبة الدوز مع التصميم الجديد -->
         <div id="doozGame" class="game-container hidden">
             <div class="game-header">
                 <h2><i class="fas fa-th-large"></i> لعبة الدوز</h2>
@@ -1765,11 +1836,13 @@
             
             <div class="game-info">
                 <div class="player-turn">
-                    <span id="doozTurn">دور: ❌</span>
+                    <span id="doozTurn">دور: اللاعب 1</span>
                 </div>
             </div>
 
-            <div class="dooz-board" id="doozBoard"></div>
+            <div class="dooz-board" id="doozBoard">
+                <!-- سيتم إنشاء الخلايا ديناميكياً -->
+            </div>
             
             <div class="game-info">
                 <button class="reset-button" id="resetDooz">
@@ -1874,10 +1947,16 @@
                     }
                 };
                 
+                // حالة لعبة الدوز الجديدة
                 this.doozState = {
-                    board: ['', '', '', '', '', '', '', '', ''],
-                    currentPlayer: '❌',
-                    gameActive: true
+                    board: Array(9).fill(''),
+                    currentPlayer: 1, // 1 للاعب، 2 للخصم
+                    gameActive: true,
+                    winningCombinations: [
+                        [0, 1, 2], [3, 4, 5], [6, 7, 8], // صفوف
+                        [0, 3, 6], [1, 4, 7], [2, 5, 8], // أعمدة
+                        [0, 4, 8], [2, 4, 6]             // أقطار
+                    ]
                 };
                 
                 this.init();
@@ -2599,16 +2678,16 @@
                 );
             }
 
-            // لعبة الدوز
+            // لعبة الدوز - تصميم جديد
             initDoozGame() {
                 const boardElement = document.getElementById('doozBoard');
                 boardElement.innerHTML = '';
                 
                 this.doozState.board.fill('');
-                this.doozState.currentPlayer = '❌';
+                this.doozState.currentPlayer = 1;
                 this.doozState.gameActive = true;
                 
-                document.getElementById('doozTurn').textContent = 'دور: ❌';
+                document.getElementById('doozTurn').textContent = 'دور: اللاعب 1';
                 document.getElementById('doozTurn').style.color = '#00b4d8';
 
                 for (let i = 0; i < 9; i++) {
@@ -2626,24 +2705,31 @@
                 if (!this.doozState.gameActive || this.doozState.board[index] !== '') return;
 
                 this.doozState.board[index] = this.doozState.currentPlayer;
-                document.querySelector(`#doozBoard [data-index="${index}"]`).textContent = this.doozState.currentPlayer;
-                document.querySelector(`#doozBoard [data-index="${index}"]`).classList.add(this.doozState.currentPlayer === '❌' ? 'x' : 'o');
-
-                if (this.checkDoozWin()) {
-                    this.endDoozGame(`فاز ${this.doozState.currentPlayer}! 🎉`, 'win');
+                const cell = document.querySelector(`#doozBoard [data-index="${index}"]`);
+                
+                // تحديث مظهر الخلية
+                cell.classList.add(this.doozState.currentPlayer === 1 ? 'player1' : 'player2');
+                
+                // التحقق من الفوز
+                const winner = this.checkDoozWin();
+                if (winner) {
+                    this.endDoozGame(`فاز ${winner === 1 ? 'اللاعب 1' : 'اللاعب 2'}! 🎉`, 'win');
+                    this.highlightWinningCells();
                     return;
                 }
 
+                // التحقق من التعادل
                 if (this.doozState.board.every(cell => cell !== '')) {
                     this.endDoozGame('تعادل! 🤝', 'draw');
                     return;
                 }
 
-                this.doozState.currentPlayer = this.doozState.currentPlayer === '❌' ? '⭕️' : '❌';
-                document.getElementById('doozTurn').textContent = `دور: ${this.doozState.currentPlayer}`;
+                // تبديل اللاعب
+                this.doozState.currentPlayer = this.doozState.currentPlayer === 1 ? 2 : 1;
+                document.getElementById('doozTurn').textContent = `دور: ${this.doozState.currentPlayer === 1 ? 'اللاعب 1' : 'اللاعب 2'}`;
 
                 // إذا كان ضد الذكاء الاصطناعي
-                if (this.gameMode === 'ai' && this.doozState.currentPlayer === '⭕️') {
+                if (this.gameMode === 'ai' && this.doozState.currentPlayer === 2) {
                     setTimeout(() => this.aiDoozMove(), 500);
                 }
             }
@@ -2660,18 +2746,30 @@
             }
 
             checkDoozWin() {
-                const winPatterns = [
-                    [0, 1, 2], [3, 4, 5], [6, 7, 8], // صفوف
-                    [0, 3, 6], [1, 4, 7], [2, 5, 8], // أعمدة
-                    [0, 4, 8], [2, 4, 6]             // أقطار
-                ];
+                for (const combination of this.doozState.winningCombinations) {
+                    const [a, b, c] = combination;
+                    if (this.doozState.board[a] && 
+                        this.doozState.board[a] === this.doozState.board[b] && 
+                        this.doozState.board[a] === this.doozState.board[c]) {
+                        return this.doozState.board[a];
+                    }
+                }
+                return null;
+            }
 
-                return winPatterns.some(pattern => {
-                    const [a, b, c] = pattern;
-                    return this.doozState.board[a] && 
-                           this.doozState.board[a] === this.doozState.board[b] && 
-                           this.doozState.board[a] === this.doozState.board[c];
-                });
+            highlightWinningCells() {
+                for (const combination of this.doozState.winningCombinations) {
+                    const [a, b, c] = combination;
+                    if (this.doozState.board[a] && 
+                        this.doozState.board[a] === this.doozState.board[b] && 
+                        this.doozState.board[a] === this.doozState.board[c]) {
+                        
+                        combination.forEach(index => {
+                            document.querySelector(`#doozBoard [data-index="${index}"]`).classList.add('winning');
+                        });
+                        break;
+                    }
+                }
             }
 
             endDoozGame(message, type) {
@@ -2682,15 +2780,14 @@
 
             resetDooz() {
                 this.doozState.board.fill('');
-                this.doozState.currentPlayer = '❌';
+                this.doozState.currentPlayer = 1;
                 this.doozState.gameActive = true;
 
                 document.querySelectorAll('#doozBoard .dooz-cell').forEach(cell => {
-                    cell.textContent = '';
-                    cell.classList.remove('x', 'o');
+                    cell.classList.remove('player1', 'player2', 'winning');
                 });
 
-                document.getElementById('doozTurn').textContent = 'دور: ❌';
+                document.getElementById('doozTurn').textContent = 'دور: اللاعب 1';
                 document.getElementById('doozTurn').style.color = '#00b4d8';
             }
         }
